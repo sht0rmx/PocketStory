@@ -53,9 +53,6 @@ results
 build
 node_modules
 .node_history
-package-lock.json
-**/package-lock.json
-!docs/package-lock.json
 *.heapsnapshot
 testApp
 coverage
