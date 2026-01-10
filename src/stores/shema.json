@@ -1,0 +1,93 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Pocket Story Storage Schema",
+  "type": "object",
+  "patternProperties": {
+    "^[0-9a-fA-F-]{36}$": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "cover": {
+          "type": "string"
+        },
+        "characters": {
+          "type": "object",
+          "patternProperties": {
+            "^[0-9a-fA-F-]{36}$": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "age": {
+                  "type": "integer"
+                },
+                "gender": {
+                  "type": "string"
+                },
+                "bio": {
+                  "type": "string"
+                },
+                "color": {
+                  "type": "string",
+                  "pattern": "^#[0-9a-fA-F]{6}$"
+                }
+              },
+              "required": ["name", "color"]
+            }
+          }
+        },
+        "scenes": {
+          "type": "object",
+          "patternProperties": {
+            "^[0-9a-fA-F-]{36}$": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "characters": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F-]{36}$"
+                  }
+                },
+                "messages": {
+                  "type": "object",
+                  "patternProperties": {
+                    "^[0-9a-fA-F-]{36}$": {
+                      "type": "object",
+                      "properties": {
+                        "by": {
+                          "type": ["string", "null"]
+                        },
+                        "text": {
+                          "type": "string"
+                        },
+                        "createdAt": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": ["by", "text", "createdAt"]
+                    }
+                  }
+                }
+              },
+              "required": ["title", "messages"]
+            }
+          }
+        }
+      },
+      "required": ["name", "characters", "scenes"]
+    }
+  }
+}
