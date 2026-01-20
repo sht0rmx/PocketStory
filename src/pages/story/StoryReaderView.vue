@@ -7,6 +7,7 @@ import InputBar from "@/components/chat/InputBar.vue";
 import Header from "@/components/ui/layout/Header.vue";
 import router from "@/router/index.js";
 import MenuButton from "@/components/ui/menu/Button.vue";
+import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal.vue";
 
 const props = defineProps({
   storyId: { type: String, required: true },
@@ -89,7 +90,7 @@ const editingLine = ref(null);
 const editModalRef = ref(null);
 
 const lineToDeleteId = ref(null);
-const deleteModalRef = ref(null);
+const isDeleteModalOpen = ref(false);
 
 const handleEditClick = (line, sid) => {
   editingLine.value = { ...line, sceneId: sid };
@@ -113,7 +114,7 @@ const closeEdit = () => {
 };
 const handleDeleteClick = (messageId) => {
   lineToDeleteId.value = messageId;
-  deleteModalRef.value.checked = true;
+  isDeleteModalOpen.value = true;
 };
 
 const confirmDelete = () => {
@@ -128,7 +129,7 @@ const confirmDelete = () => {
 };
 
 const closeDelete = () => {
-  deleteModalRef.value.checked = false;
+  isDeleteModalOpen.value = false;
   lineToDeleteId.value = null;
 };
 const openSceneEditor = inject("openSceneEditor");
@@ -278,30 +279,13 @@ onBeforeRouteLeave(() => {
       <label class="modal-backdrop" @click="closeEdit">Close</label>
     </div>
 
-    <input
-      id="delete-modal"
-      ref="deleteModalRef"
-      class="modal-toggle"
-      type="checkbox"
+    <ConfirmDeleteModal
+      v-model="isDeleteModalOpen"
+      title="Удалить сообщение?"
+      description="Это действие нельзя будет отменить. Вы уверены?"
+      @confirm="confirmDelete"
+      @cancel="closeDelete"
     />
-
-    <div class="modal" role="dialog">
-      <div class="modal-box">
-        <h3 class="text-lg font-bold text-error flex items-center gap-2">
-          <i class="ri-delete-bin-line"></i> Удалить сообщение?
-        </h3>
-        <p class="py-4 opacity-70">
-          Это действие нельзя будет отменить. Вы уверены?
-        </p>
-        <div class="modal-action">
-          <button class="btn btn-ghost" @click="closeDelete">Отмена</button>
-          <button class="btn btn-error px-8" @click="confirmDelete">
-            Удалить
-          </button>
-        </div>
-      </div>
-      <label class="modal-backdrop" @click="closeDelete">Close</label>
-    </div>
     <InputBar
       :scene-id="currentSceneId"
       :story-id="props.storyId"

@@ -1,6 +1,7 @@
 <script setup>
 import { provide, ref, watch } from "vue";
 import DockBar from "@/components/ui/layout/DockBar.vue";
+import SidebarNav from "@/components/ui/layout/SidebarNav.vue";
 import CharacterEditModal from "@/components/characters/CharacterEdit.vue";
 import SceneEditModal from "@/components/scenes/SceneEdit.vue";
 import StoryEditModal from "@/components/stories/StoryEdit.vue";
@@ -46,23 +47,54 @@ watch(isChatMode, (newValue) => {
 
 <template>
   <div
-    :class="{ 'h-screen': !isChatMode }"
+    class="bg-base-300"
+    :class="['drawer lg:drawer-open', { 'h-screen': !isChatMode }]"
     :style="{ height: isChatMode ? '100dvh' : 'h-full' }"
-    class="flex flex-col bg-base-300 overflow-hidden app-container"
   >
-    <main
-      :class="{
-        'px-5 pt-4': !$route.meta.hidePadding,
-        'pb-27': !$route.meta.hideDock,
-      }"
-      class="w-full flex-1 flex flex-col overflow-y-auto"
-    >
-      <div class="w-full flex flex-col h-full">
-        <router-view />
-      </div>
-    </main>
+    <input
+      id="app-drawer"
+      type="checkbox"
+      class="drawer-toggle"
+      :checked="false"
+      :class="{ hidden: isChatMode || $route.meta.hideDock }"
+    />
 
-    <DockBar v-if="!isChatMode && !$route.meta.hideDock" />
+    <div
+      class="drawer-content flex overflow-hidden app-container"
+    >
+      <div class="flex flex-col flex-1 overflow-hidden">
+        <main
+          class="w-full flex-1 flex flex-col overflow-y-auto"
+          :class="[
+            !$route.meta.hidePadding && 'px-5 pt-4',
+            !$route.meta.hideDock && 'pb-40 lg:pb-6',
+          ]"
+        >
+          <div class="w-full flex flex-col h-full">
+            <router-view />
+          </div>
+        </main>
+
+        <DockBar
+          v-if="!isChatMode && !$route.meta.hideDock"
+          class="lg:hidden"
+        />
+      </div>
+    </div>
+
+    <div
+      v-if="!isChatMode && !$route.meta.hideDock"
+      class="drawer-side h-full"
+      style="height: 100vh;"
+    >
+      <label for="app-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+      <aside
+        class="w-72 lg:w-64 bg-base-200/90 backdrop-blur-md border-r border-base-200 flex h-full"
+        style="height: 100vh;"
+      >
+        <SidebarNav />
+      </aside>
+    </div>
   </div>
   <StoryEditModal ref="storyModalRef" />
   <SceneEditModal ref="sceneModalRef" />
@@ -82,6 +114,5 @@ body {
 .app-container {
   transition: height 0.1s ease-out;
   display: flex;
-  flex-direction: column;
 }
 </style>

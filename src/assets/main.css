@@ -2,6 +2,6 @@
 
 @plugin "daisyui" {
   themes:
-    garden --default,
+    emerald --default,
     dim --prefersdark;
 }

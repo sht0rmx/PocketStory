@@ -8,7 +8,10 @@ defineProps({
 
 <template>
   <div
-    class="fixed items-center justify-between flex w-full top-0 left-0 z-50 py-2 bg-base-300/60 backdrop-blur-md transition-all"
+    :class="[
+      'fixed items-center justify-between flex w-full top-0 left-0 z-50 py-2 bg-base-300/60 backdrop-blur-md transition-all',
+      !$route.meta.hideDock && 'lg:ml-64 lg:w-[calc(100%-16rem)]',
+    ]"
   >
     <div class="flex space-x-2 gap-2 px-4 py-2">
       <button

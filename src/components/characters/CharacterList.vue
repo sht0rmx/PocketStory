@@ -2,6 +2,7 @@
 import { computed, inject, ref } from "vue";
 import { useSavesStore } from "@/stores/saves.js";
 import { useHoldAction } from "@/lib/HoldAction.js";
+import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal.vue";
 
 const props = defineProps({
   storyId: { type: String, required: true },
@@ -19,19 +20,19 @@ const charactersArray = computed(() => {
   }));
 });
 
-const deleteDialog = ref(null);
 const deleteTargetId = ref(null);
+const isDeleteModalOpen = ref(false);
 
 const openCharacterEditor = inject("openCharacterEditor");
 
 const openDeleteDialog = (id) => {
   deleteTargetId.value = id;
-  deleteDialog.value.showModal();
+  isDeleteModalOpen.value = true;
 };
 
 const closeDeleteDialog = () => {
   deleteTargetId.value = null;
-  deleteDialog.value.close();
+  isDeleteModalOpen.value = false;
 };
 
 const confirmDelete = () => {
@@ -64,7 +65,7 @@ const { start, cancel } = useHoldAction(
             :style="{
               backgroundColor: char.color ? `${char.color}66` : '#666666',
             }"
-            class="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full text-white font-bold text-lg"
+            class="w-10 h-10 shrink-0 flex items-center justify-center rounded-full text-white font-bold text-lg"
           >
             {{ char.name?.[0] || "?" }}
           </div>
@@ -105,25 +106,13 @@ const { start, cancel } = useHoldAction(
       >
     </div>
 
-    <dialog ref="deleteDialog" class="modal">
-      <div class="modal-box">
-        <h3 class="text-lg font-bold text-error flex items-center gap-2">
-          <i class="ri-delete-bin-line"></i> Удалить персонажа?
-        </h3>
-        <p class="py-4 opacity-70">
-          Это действие нельзя будет отменить. Вы уверены?
-        </p>
-        <div class="modal-action">
-          <button class="btn btn-ghost" @click="closeDeleteDialog">
-            Отмена
-          </button>
-          <button class="btn btn-error px-8" @click="confirmDelete">
-            Удалить
-          </button>
-        </div>
-      </div>
-      <label class="modal-backdrop" @click="closeDeleteDialog">Close</label>
-    </dialog>
+    <ConfirmDeleteModal
+      v-model="isDeleteModalOpen"
+      title="Удалить персонажа?"
+      description="Это действие нельзя будет отменить. Вы уверены?"
+      @confirm="confirmDelete"
+      @cancel="closeDeleteDialog"
+    />
   </div>
 </template>
 

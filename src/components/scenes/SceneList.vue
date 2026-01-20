@@ -4,6 +4,7 @@ import { useSavesStore } from "@/stores/saves.js";
 import router from "@/router/index.js";
 import draggable from "vuedraggable";
 import { useHoldAction } from "@/lib/HoldAction.js";
+import ConfirmDeleteModal from "@/components/ui/ConfirmDeleteModal.vue";
 
 const props = defineProps({
   storyId: { type: String, required: true },
@@ -12,8 +13,8 @@ const props = defineProps({
 const savesStore = useSavesStore();
 const story = computed(() => savesStore.getStory(props.storyId));
 
-const deleteDialog = ref(null);
 const deleteTargetId = ref(null);
+const isDeleteModalOpen = ref(false);
 
 const { start, cancel } = useHoldAction(
   (id) => router.push(`/story/${props.storyId}/chat?scene=${id}`),
@@ -44,12 +45,12 @@ const removeScene = (sceneId) => {
 
 const openDeleteDialog = (id) => {
   deleteTargetId.value = id;
-  deleteDialog.value.showModal();
+  isDeleteModalOpen.value = true;
 };
 
 const closeDeleteDialog = () => {
   deleteTargetId.value = null;
-  deleteDialog.value.close();
+  isDeleteModalOpen.value = false;
 };
 
 const confirmDelete = () => {
@@ -83,7 +84,11 @@ const goToChat = (sceneId) => {
             @touchend="cancel(element.id)"
             @touchstart.prevent="start(element.id)"
           >
-            <div class="drag-handle cursor-grab opacity-30 flex-shrink-0">
+            <div
+              class="drag-handle cursor-grab opacity-30 shrink-0"
+              @mousedown.stop
+              @touchstart.stop
+            >
               <i class="ri-draggable text-sm"></i>
             </div>
             <div class="flex flex-col min-w-0">
@@ -126,23 +131,13 @@ const goToChat = (sceneId) => {
       >
     </div>
 
-    <dialog ref="deleteDialog" class="modal">
-      <div class="modal-box">
-        <h3 class="text-lg font-bold text-error">Удалить сцену?</h3>
-        <p class="py-4">
-          Все сообщения в этой сцене будут безвозвратно удалены.
-        </p>
-        <div class="modal-action">
-          <button class="btn btn-ghost" @click="deleteDialog.close()">
-            Отмена
-          </button>
-          <button class="btn btn-error px-8" @click="confirmDelete">
-            Удалить
-          </button>
-        </div>
-      </div>
-      <label class="modal-backdrop" @click="deleteDialog.close()">Close</label>
-    </dialog>
+    <ConfirmDeleteModal
+      v-model="isDeleteModalOpen"
+      title="Удалить сцену?"
+      description="Все сообщения в этой сцене будут безвозвратно удалены."
+      @confirm="confirmDelete"
+      @cancel="closeDeleteDialog"
+    />
   </div>
 </template>
 

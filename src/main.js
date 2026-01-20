@@ -14,6 +14,8 @@ export let characterId = ref(null);
 
 export let backButton = ref(false);
 
+export const appVersion = "v1.0.1-beta";
+
 export const currentTheme = ref("system");
 const THEME_KEY = "theme";
 

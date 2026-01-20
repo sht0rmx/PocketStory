@@ -145,7 +145,7 @@ export const useSavesStore = defineStore("saves", {
       }
 
       const newId = uuid4();
-      const storyCopy = structuredClone(storyData);
+      const storyCopy = JSON.parse(JSON.stringify(storyData));
 
       this.allStories[newId] = {
         ...createStoryObj(storyCopy),
